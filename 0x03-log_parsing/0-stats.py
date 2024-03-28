@@ -1,56 +1,50 @@
 #!/usr/bin/python3
+"""
+reads stdin line by line and computes metrics
+"""
+
 
 import sys
-import re
 
 
-pattern = re.compile(r'^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) - \[(.*?)\] "GET \/projects\/260 HTTP\/1\.1" (\d{3}) (\d+)$')
-
+status_counts = {
+    200: 0,
+    301: 0,
+    400: 0,
+    401: 0,
+    403: 0,
+    404: 0,
+    405: 0,
+    500: 0
+}
 
 total_file_size = 0
-status_code_counts = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
 line_count = 0
 
-try:
 
+try:
     for line in sys.stdin:
         line = line.strip()
-        match = pattern.match(line)
-        if match:
+        parts = line.split()
+        if len(parts) != 7:
+            continue
 
-            ip_address, date, status_code, file_size = match.groups()
-            status_code = int(status_code)
-            file_size = int(file_size)
+        try:
+            file_size = int(parts[5])
+            status_code = int(parts[3])
+        except ValueError:
+            continue
 
+        total_file_size += file_size
+        line_count += 1
 
-            total_file_size += file_size
-            status_code_counts[status_code] += 1
-            line_count += 1
-
-
-            if line_count % 10 == 0:
-
-                print("Total file size:", total_file_size)
-                for code, count in sorted(status_code_counts.items()):
-                    if count > 0:
-                        print("{}: {}".format(code, count))
-
+        if status_code in status_counts:
+            status_counts[status_code] += 1
 
         if line_count % 10 == 0:
-            try:
-                sys.stdin.flush()
-            except KeyboardInterrupt:
-                print("\nKeyboard interruption detected.")
-                print("Total file size:", total_file_size)
-                for code, count in sorted(status_code_counts.items()):
-                    if count > 0:
-                        print("{}: {}".format(code, count))
-                sys.exit(0)
+            print_statistics()
 
 except KeyboardInterrupt:
-    print("\nKeyboard interruption detected.")
-    print("Total file size:", total_file_size)
-    for code, count in sorted(status_code_counts.items()):
-        if count > 0:
-            print("{}: {}".format(code, count))
+    print("\nKeyboard interrupt detected, printing statistics:")
+    print_statistics()
     sys.exit(0)
