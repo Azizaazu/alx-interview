@@ -44,7 +44,11 @@ try:
         if line_count % 10 == 0:
             print_statistics()
 
-except KeyboardInterrupt:
-    print("\nKeyboard interrupt detected, printing statistics:")
-    print_statistics()
-    sys.exit(0)
+except Exception as err:
+    pass
+
+finally:
+    print('File size: {}'.format(total_file_size))
+    for key, value in sorted(status_counts.items()):
+        if value != 0:
+            print('{}: {}'.format(key, value))
