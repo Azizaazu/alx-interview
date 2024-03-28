@@ -24,25 +24,21 @@ line_count = 0
 
 try:
     for line in sys.stdin:
-        line = line.strip()
-        parts = line.split()
-        if len(parts) != 7:
-            continue
+        line_list = line.split(" ")
+        if len(line_list) > 4:
+            code = line_list[-2]
+            size = int(line_list[-1])
+            if code in status_counts.keys():
+                status_counts[code] += 1
+            total_file_size += size
+            line_count += 1
 
-        try:
-            file_size = int(parts[5])
-            status_code = int(parts[3])
-        except ValueError:
-            continue
-
-        total_file_size += file_size
-        line_count += 1
-
-        if status_code in status_counts:
-            status_counts[status_code] += 1
-
-        if line_count % 10 == 0:
-            print_statistics()
+        if line_count == 10:
+            line_count = 0
+            print('File size: {}'.format(total_file_size))
+            for key, value in sorted(status_counts.items()):
+                if value != 0:
+                    print('{}: {}'.format(key, value))
 
 except Exception as err:
     pass
