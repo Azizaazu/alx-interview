@@ -24,4 +24,4 @@ def validUTF8(data):
                 return False
             bytes_left -= 1
 
-    return bytes_left == 0
+    return (bytes_left == 0)
