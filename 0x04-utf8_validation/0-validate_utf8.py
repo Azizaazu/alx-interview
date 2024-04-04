@@ -9,19 +9,17 @@ def validUTF8(data):
 
     for num in data:
         if bytes_left == 0:
-            if (num >> 5) == 0b110:
+            if (num >> 5) == 0b110 or (num >> 5) == 0b1110:
                 bytes_left = 1
             elif (num >> 4) == 0b1110:
                 bytes_left = 2
             elif (num >> 3) == 0b11110:
                 bytes_left = 3
-            elif (num >> 7) == 0b0:
-                bytes_left = 0
-            else:
+            elif (num >> 7) == 0b1:
                 return False
         else:
             if (num >> 6) != 0b10:
                 return False
             bytes_left -= 1
 
-    return (bytes_left == 0)
+    return bytes_left == 0
