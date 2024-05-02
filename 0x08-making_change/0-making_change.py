@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+"""
+Change comes from within
+"""
+
 
 def makeChange(coins, total):
     """ Determines the fewest number of coins
@@ -6,8 +10,7 @@ def makeChange(coins, total):
     if total <= 0:
         return 0
 
-    dp = [float('inf')] * (total + 1)
-    dp[0] = 0
+    dp = [0] + [float('inf')] * (total)
 
     for coin in coins:
         for i in range(coin, total + 1):
